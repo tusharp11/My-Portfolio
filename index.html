@@ -1,0 +1,1224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Tushar Pusadkar | UAS Engineer</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Sora:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg: #040a0f;
+    --bg2: #071218;
+    --bg3: #0a1a24;
+    --accent: #00d4ff;
+    --accent2: #ff6b00;
+    --accent3: #00ff88;
+    --text: #e8f4f8;
+    --muted: #6a9ab0;
+    --border: rgba(0,212,255,0.15);
+    --card: rgba(7,18,24,0.8);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Sora', sans-serif;
+    font-weight: 400;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* ─── CANVAS ─── */
+  #radar-canvas {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.18;
+  }
+
+  /* ─── NAV ─── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 4%;
+    background: rgba(4,10,15,0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nav-logo {
+    font-family: 'Orbitron', monospace;
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--accent);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .nav-logo span { color: var(--accent2); }
+
+  .nav-links {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+  }
+
+  .nav-links a {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--accent); }
+
+  .nav-status {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: 'Orbitron', monospace;
+    font-size: 0.65rem;
+    color: var(--accent3);
+  }
+
+  .pulse-dot {
+    width: 7px; height: 7px;
+    background: var(--accent3);
+    border-radius: 50%;
+    animation: pulse 1.8s infinite;
+  }
+
+  @keyframes pulse {
+    0%,100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.3; transform: scale(0.7); }
+  }
+
+  /* ─── HERO ─── */
+  #hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    padding: 0 6%;
+    z-index: 1;
+    overflow: hidden;
+  }
+
+  .hero-grid-overlay {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,212,255,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,212,255,0.04) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+  }
+
+  .hero-glow {
+    position: absolute;
+    width: 600px; height: 600px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(0,212,255,0.07) 0%, transparent 70%);
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+
+  .hero-content {
+    max-width: 800px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .hero-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: 'Orbitron', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    padding: 0.35rem 0.8rem;
+    margin-bottom: 1.8rem;
+    opacity: 0;
+    animation: fadeUp 0.6s 0.2s forwards;
+  }
+
+  .hero-name {
+    font-family: 'Orbitron', monospace;
+    font-size: clamp(2.8rem, 6vw, 5rem);
+    font-weight: 900;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    opacity: 0;
+    animation: fadeUp 0.6s 0.4s forwards;
+  }
+
+  .hero-name .highlight { color: var(--accent); }
+
+  .hero-role {
+    font-family: 'Orbitron', monospace;
+    font-size: clamp(0.8rem, 1.5vw, 1rem);
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent2);
+    margin-top: 0.8rem;
+    opacity: 0;
+    animation: fadeUp 0.6s 0.55s forwards;
+  }
+
+  .hero-desc {
+    font-size: 1rem;
+    color: var(--muted);
+    max-width: 540px;
+    margin-top: 1.4rem;
+    line-height: 1.8;
+    opacity: 0;
+    animation: fadeUp 0.6s 0.7s forwards;
+  }
+
+  .hero-stats {
+    display: flex;
+    gap: 2.5rem;
+    margin-top: 2.5rem;
+    opacity: 0;
+    animation: fadeUp 0.6s 0.85s forwards;
+  }
+
+  .stat-item { display: flex; flex-direction: column; }
+
+  .stat-value {
+    font-family: 'Orbitron', monospace;
+    font-size: 2rem;
+    font-weight: 900;
+    color: var(--accent);
+    line-height: 1;
+  }
+
+  .stat-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--muted);
+    margin-top: 0.3rem;
+  }
+
+  .hero-cta {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2.5rem;
+    opacity: 0;
+    animation: fadeUp 0.6s 1s forwards;
+  }
+
+  .btn-primary {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 0.85rem 2rem;
+    background: var(--accent);
+    color: var(--bg);
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
+    transition: background 0.2s, transform 0.2s;
+    display: inline-block;
+  }
+
+  .btn-primary:hover { background: #33ddff; transform: translateY(-2px); }
+
+  .btn-secondary {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 0.85rem 2rem;
+    background: transparent;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.2s, color 0.2s;
+    display: inline-block;
+  }
+
+  .btn-secondary:hover { background: rgba(0,212,255,0.1); }
+
+  .hero-right {
+    position: absolute;
+    right: 5%;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0;
+    animation: fadeIn 1s 1.2s forwards;
+  }
+
+  .hud-circle {
+    width: 320px;
+    height: 320px;
+    position: relative;
+  }
+
+  .hud-circle svg { width: 100%; height: 100%; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  /* ─── SECTIONS ─── */
+  section {
+    position: relative;
+    z-index: 1;
+    padding: 6rem 6%;
+  }
+
+  .section-header {
+    margin-bottom: 3.5rem;
+  }
+
+  .section-eyebrow {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    margin-bottom: 0.8rem;
+  }
+
+  .section-eyebrow::before {
+    content: '';
+    width: 30px; height: 1px;
+    background: var(--accent);
+  }
+
+  .section-title {
+    font-family: 'Orbitron', monospace;
+    font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.1;
+  }
+
+  .section-title span { color: var(--accent); }
+
+  /* ─── ABOUT ─── */
+  #about { background: var(--bg2); }
+
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+  }
+
+  .about-text p {
+    color: var(--muted);
+    font-size: 0.95rem;
+    line-height: 1.9;
+    margin-bottom: 1rem;
+  }
+
+  .about-text p strong { color: var(--text); font-weight: 600; }
+
+  .about-certs {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .cert-badge {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1rem 1.2rem;
+    border: 1px solid var(--border);
+    background: var(--card);
+    backdrop-filter: blur(8px);
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.3s;
+  }
+
+  .cert-badge::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 3px; height: 100%;
+    background: var(--accent);
+  }
+
+  .cert-badge:hover { border-color: rgba(0,212,255,0.4); }
+
+  .cert-icon {
+    font-size: 1.4rem;
+    flex-shrink: 0;
+  }
+
+  .cert-name {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: 0.05em;
+  }
+
+  .cert-id {
+    font-size: 0.7rem;
+    color: var(--muted);
+    margin-top: 0.2rem;
+  }
+
+  /* ─── SKILLS ─── */
+  #skills { background: var(--bg); }
+
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+  }
+
+  .skill-card {
+    padding: 1.8rem;
+    border: 1px solid var(--border);
+    background: var(--card);
+    backdrop-filter: blur(8px);
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s, border-color 0.3s;
+    clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 0 100%);
+  }
+
+  .skill-card::after {
+    content: '';
+    position: absolute;
+    top: 0; right: 0;
+    width: 0; height: 0;
+    border-style: solid;
+    border-width: 0 16px 16px 0;
+    border-color: transparent var(--accent) transparent transparent;
+    opacity: 0.7;
+  }
+
+  .skill-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(0,212,255,0.35);
+  }
+
+  .skill-card-icon {
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+  }
+
+  .skill-card-title {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 1rem;
+  }
+
+  .skill-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  .skill-tag {
+    font-size: 0.68rem;
+    padding: 0.25rem 0.6rem;
+    border: 1px solid rgba(0,212,255,0.2);
+    color: var(--muted);
+    letter-spacing: 0.05em;
+  }
+
+  /* ─── EXPERIENCE ─── */
+  #experience { background: var(--bg2); }
+
+  .timeline {
+    position: relative;
+    padding-left: 2rem;
+  }
+
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 1px;
+    background: linear-gradient(to bottom, var(--accent), transparent);
+  }
+
+  .timeline-item {
+    position: relative;
+    margin-bottom: 3rem;
+    padding-left: 2rem;
+    opacity: 0;
+    transform: translateX(-20px);
+    animation: slideIn 0.5s forwards;
+  }
+
+  .timeline-item:nth-child(1) { animation-delay: 0.1s; }
+  .timeline-item:nth-child(2) { animation-delay: 0.3s; }
+
+  @keyframes slideIn {
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  .timeline-dot {
+    position: absolute;
+    left: -2rem;
+    top: 0.4rem;
+    width: 10px; height: 10px;
+    border: 2px solid var(--accent);
+    background: var(--accent);
+    transform: translateX(-4px);
+    clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+  }
+
+  .timeline-period {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    color: var(--accent2);
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+
+  .timeline-company {
+    font-family: 'Orbitron', monospace;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 0.2rem;
+  }
+
+  .timeline-role {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--accent);
+    letter-spacing: 0.06em;
+    margin-bottom: 1.2rem;
+  }
+
+  .timeline-location {
+    font-size: 0.72rem;
+    color: var(--muted);
+    margin-bottom: 1rem;
+  }
+
+  .timeline-points {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .timeline-points li {
+    font-size: 0.88rem;
+    color: var(--muted);
+    line-height: 1.7;
+    padding-left: 1.2rem;
+    position: relative;
+  }
+
+  .timeline-points li::before {
+    content: '›';
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+    font-weight: 700;
+  }
+
+  /* ─── PROJECTS ─── */
+  #projects { background: var(--bg); }
+
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+  }
+
+  .project-card {
+    padding: 2rem;
+    border: 1px solid var(--border);
+    background: var(--card);
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s, border-color 0.3s;
+  }
+
+  .project-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(0,212,255,0.3);
+  }
+
+  .project-card::before {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(to right, var(--accent), var(--accent2));
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .project-card:hover::before { opacity: 1; }
+
+  .project-num {
+    font-family: 'Orbitron', monospace;
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: rgba(0,212,255,0.07);
+    position: absolute;
+    top: 1rem; right: 1.5rem;
+    line-height: 1;
+  }
+
+  .project-title {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: 0.06em;
+    margin-bottom: 0.8rem;
+  }
+
+  .project-desc {
+    font-size: 0.85rem;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+
+  .project-tag {
+    display: inline-block;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 0.2rem 0.6rem;
+    border: 1px solid rgba(255,107,0,0.3);
+    color: var(--accent2);
+    margin-top: 1rem;
+  }
+
+  /* ─── CONTACT ─── */
+  #contact { background: var(--bg2); }
+
+  .contact-inner {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: start;
+  }
+
+  .contact-info-title {
+    font-family: 'Orbitron', monospace;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 2rem;
+  }
+
+  .contact-links {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+  }
+
+  .contact-link {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    text-decoration: none;
+    padding: 1rem 1.2rem;
+    border: 1px solid var(--border);
+    background: var(--card);
+    transition: border-color 0.2s, transform 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .contact-link:hover {
+    border-color: rgba(0,212,255,0.4);
+    transform: translateX(4px);
+  }
+
+  .contact-link-icon {
+    font-size: 1.2rem;
+    flex-shrink: 0;
+  }
+
+  .contact-link-label {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    display: block;
+    margin-bottom: 0.15rem;
+  }
+
+  .contact-link-value {
+    font-size: 0.85rem;
+    color: var(--text);
+  }
+
+  .contact-right p {
+    font-size: 0.95rem;
+    color: var(--muted);
+    line-height: 1.9;
+    margin-bottom: 1rem;
+  }
+
+  .availability-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: 'Orbitron', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent3);
+    border: 1px solid rgba(0,255,136,0.3);
+    padding: 0.4rem 0.9rem;
+    margin-bottom: 1.5rem;
+  }
+
+  /* ─── FOOTER ─── */
+  footer {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    padding: 2rem;
+    border-top: 1px solid var(--border);
+    font-family: 'Orbitron', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    color: var(--muted);
+  }
+
+  /* ─── HUD DECORATION ─── */
+  .hud-corner {
+    position: absolute;
+    width: 20px; height: 20px;
+    border-color: var(--accent);
+    border-style: solid;
+    opacity: 0.5;
+  }
+
+  .hud-corner.tl { top: 1rem; left: 1rem; border-width: 1px 0 0 1px; }
+  .hud-corner.tr { top: 1rem; right: 1rem; border-width: 1px 1px 0 0; }
+  .hud-corner.bl { bottom: 1rem; left: 1rem; border-width: 0 0 1px 1px; }
+  .hud-corner.br { bottom: 1rem; right: 1rem; border-width: 0 1px 1px 0; }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 900px) {
+    .about-grid, .contact-inner { grid-template-columns: 1fr; gap: 2rem; }
+    .skills-grid { grid-template-columns: 1fr 1fr; }
+    .projects-grid { grid-template-columns: 1fr; }
+    .hero-right { display: none; }
+    .hero-stats { gap: 1.5rem; }
+  }
+
+  @media (max-width: 600px) {
+    .skills-grid { grid-template-columns: 1fr; }
+    nav .nav-links { display: none; }
+    .hero-cta { flex-direction: column; }
+  }
+
+  /* Scanline overlay */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+      to bottom,
+      transparent 0px,
+      transparent 3px,
+      rgba(0,0,0,0.04) 3px,
+      rgba(0,0,0,0.04) 4px
+    );
+    pointer-events: none;
+    z-index: 9999;
+  }
+</style>
+</head>
+<body>
+
+<canvas id="radar-canvas"></canvas>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">T<span>.</span>Pusadkar</div>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#experience">Experience</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <div class="nav-status">
+    <div class="pulse-dot"></div>
+    AVAILABLE FOR OPPORTUNITIES
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-grid-overlay"></div>
+  <div class="hero-glow"></div>
+  <div class="hud-corner tl"></div>
+  <div class="hud-corner tr"></div>
+  <div class="hud-corner bl"></div>
+  <div class="hud-corner br"></div>
+  <div class="hero-content">
+    <div class="hero-tag">✈ Aeronautical Engineer · UAS Specialist</div>
+    <h1 class="hero-name">TUSHAR<br/><span class="highlight">PUSADKAR</span></h1>
+    <div class="hero-role">UAS Development &amp; Type Certification Expert</div>
+    <p class="hero-desc">
+      3+ years engineering certifiable UAV systems — from avionics integration and flight control firmware to DGCA Type Certification and custom GCS development. Delivering robust, mission-ready drones that meet stringent regulatory standards.
+    </p>
+    <div class="hero-stats">
+      <div class="stat-item">
+        <span class="stat-value">10+</span>
+        <span class="stat-label">Type Certifications</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-value">3+</span>
+        <span class="stat-label">Years Experience</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-value">DGCA</span>
+        <span class="stat-label">Certified Pilot</span>
+      </div>
+    </div>
+    <div class="hero-cta">
+      <a href="#contact" class="btn-primary">Get In Touch</a>
+      <a href="#experience" class="btn-secondary">View Experience</a>
+    </div>
+  </div>
+
+  <div class="hero-right">
+    <div class="hud-circle">
+      <svg viewBox="0 0 320 320" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="grd" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#00d4ff" stop-opacity="0.8"/>
+            <stop offset="100%" stop-color="#ff6b00" stop-opacity="0.4"/>
+          </linearGradient>
+        </defs>
+        <!-- Outer rings -->
+        <circle cx="160" cy="160" r="150" fill="none" stroke="rgba(0,212,255,0.12)" stroke-width="1"/>
+        <circle cx="160" cy="160" r="120" fill="none" stroke="rgba(0,212,255,0.18)" stroke-width="1"/>
+        <circle cx="160" cy="160" r="90"  fill="none" stroke="rgba(0,212,255,0.25)" stroke-width="1"/>
+        <circle cx="160" cy="160" r="60"  fill="none" stroke="rgba(0,212,255,0.35)" stroke-width="1.5"/>
+        <circle cx="160" cy="160" r="30"  fill="none" stroke="rgba(0,212,255,0.5)"  stroke-width="1.5"/>
+        <!-- Crosshairs -->
+        <line x1="160" y1="10"  x2="160" y2="310" stroke="rgba(0,212,255,0.15)" stroke-width="1"/>
+        <line x1="10"  y1="160" x2="310" y2="160" stroke="rgba(0,212,255,0.15)" stroke-width="1"/>
+        <!-- Diagonal ticks -->
+        <line x1="160" y1="10" x2="310" y2="160" stroke="rgba(0,212,255,0.06)" stroke-width="1"/>
+        <line x1="160" y1="310" x2="310" y2="160" stroke="rgba(0,212,255,0.06)" stroke-width="1"/>
+        <line x1="160" y1="10" x2="10"  y2="160" stroke="rgba(0,212,255,0.06)" stroke-width="1"/>
+        <line x1="160" y1="310" x2="10"  y2="160" stroke="rgba(0,212,255,0.06)" stroke-width="1"/>
+        <!-- Sweep arm -->
+        <line id="sweep" x1="160" y1="160" x2="160" y2="15" stroke="url(#grd)" stroke-width="2" opacity="0.8">
+          <animateTransform attributeName="transform" type="rotate" from="0 160 160" to="360 160 160" dur="4s" repeatCount="indefinite"/>
+        </line>
+        <!-- Sweep trail -->
+        <path d="M160,160 L160,15 A145,145 0 0,1 295,205 Z" fill="url(#grd)" opacity="0.04">
+          <animateTransform attributeName="transform" type="rotate" from="0 160 160" to="360 160 160" dur="4s" repeatCount="indefinite"/>
+        </path>
+        <!-- Center dot -->
+        <circle cx="160" cy="160" r="5" fill="var(--accent)" opacity="0.9"/>
+        <circle cx="160" cy="160" r="10" fill="none" stroke="var(--accent)" stroke-width="1" opacity="0.5"/>
+        <!-- Blips -->
+        <circle cx="210" cy="110" r="4" fill="var(--accent3)" opacity="0.9">
+          <animate attributeName="opacity" values="0.9;0.2;0.9" dur="2.5s" begin="1s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="120" cy="200" r="3" fill="var(--accent2)" opacity="0.8">
+          <animate attributeName="opacity" values="0.8;0.1;0.8" dur="3s" begin="0.5s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="220" cy="190" r="3" fill="var(--accent)" opacity="0.7">
+          <animate attributeName="opacity" values="0.7;0.1;0.7" dur="2s" begin="1.8s" repeatCount="indefinite"/>
+        </circle>
+        <!-- Corner markings -->
+        <text x="12"  y="25"  font-family="Orbitron" font-size="8" fill="rgba(0,212,255,0.4)" letter-spacing="1">UAV</text>
+        <text x="260" y="25"  font-family="Orbitron" font-size="8" fill="rgba(0,212,255,0.4)">SYS</text>
+        <text x="12"  y="310" font-family="Orbitron" font-size="8" fill="rgba(0,212,255,0.4)">ALT</text>
+        <text x="250" y="310" font-family="Orbitron" font-size="8" fill="rgba(0,212,255,0.4)">NAV</text>
+        <!-- Range labels -->
+        <text x="164" y="73"  font-family="Orbitron" font-size="7" fill="rgba(0,212,255,0.4)">90</text>
+        <text x="164" y="103" font-family="Orbitron" font-size="7" fill="rgba(0,212,255,0.4)">60</text>
+        <text x="164" y="133" font-family="Orbitron" font-size="7" fill="rgba(0,212,255,0.4)">30</text>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="section-header">
+    <div class="section-eyebrow">System Profile</div>
+    <h2 class="section-title">About <span>The Engineer</span></h2>
+  </div>
+  <div class="about-grid">
+    <div class="about-text">
+      <p>I'm an <strong>Aeronautical Engineer</strong> specialising in the full lifecycle of UAV systems — from initial concept and R&D through to <strong>DGCA Type Certification</strong> and operational deployment.</p>
+      <p>My expertise spans avionics integration, propulsion and sensor systems, flight controller firmware tuning (ArduPilot / PX4), ground control station development, and flight test campaigns with rigorous telemetry analysis.</p>
+      <p>At <strong>Marut Dronetech</strong> I lead multi-disciplinary certification projects while contributing to novel patent ideation for UAV subsystems. Previously at <strong>Chatak Innovations</strong> I grew from integrating operational UAVs to leading the firmware department and entire type certification programmes.</p>
+      <p>I hold a <strong>B.Tech in Aeronautical Engineering</strong> (Grade A) from ADCET, and a DGCA Medium Class Remote Pilot licence.</p>
+    </div>
+    <div class="about-certs">
+      <div class="cert-badge">
+        <div class="cert-icon">🎖️</div>
+        <div>
+          <div class="cert-name">DGCA Certified Remote Pilot</div>
+          <div class="cert-id">Class: Medium &nbsp;|&nbsp; ID: 41230205V71TD</div>
+        </div>
+      </div>
+      <div class="cert-badge">
+        <div class="cert-icon">🎓</div>
+        <div>
+          <div class="cert-name">B.Tech – Aeronautical Engineering</div>
+          <div class="cert-id">ADCET, 2018–2023 &nbsp;|&nbsp; Grade: A</div>
+        </div>
+      </div>
+      <div class="cert-badge">
+        <div class="cert-icon">🏆</div>
+        <div>
+          <div class="cert-name">Award – Fastest Project Completion</div>
+          <div class="cert-id">Chatak Innovations LLP &nbsp;|&nbsp; 2024</div>
+        </div>
+      </div>
+      <div class="cert-badge">
+        <div class="cert-icon">📋</div>
+        <div>
+          <div class="cert-name">Regulatory Awareness</div>
+          <div class="cert-id">DGCA · CEMILAC · FAA · EASA</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills">
+  <div class="section-header">
+    <div class="section-eyebrow">Technical Arsenal</div>
+    <h2 class="section-title">Core <span>Competencies</span></h2>
+  </div>
+  <div class="skills-grid">
+    <div class="skill-card">
+      <div class="skill-card-icon">🛸</div>
+      <div class="skill-card-title">UAV Systems Integration</div>
+      <div class="skill-tags">
+        <span class="skill-tag">Avionics Integration</span>
+        <span class="skill-tag">Propulsion Systems</span>
+        <span class="skill-tag">LiDAR &amp; Optical Flow</span>
+        <span class="skill-tag">GNSS</span>
+        <span class="skill-tag">ESC &amp; BMS</span>
+        <span class="skill-tag">Obstacle Radar</span>
+        <span class="skill-tag">Terrain Radar</span>
+        <span class="skill-tag">GCS Integration</span>
+      </div>
+    </div>
+    <div class="skill-card">
+      <div class="skill-card-icon">📜</div>
+      <div class="skill-card-title">Type Certification</div>
+      <div class="skill-tags">
+        <span class="skill-tag">DGCA Compliance</span>
+        <span class="skill-tag">Certification Leadership</span>
+        <span class="skill-tag">V&amp;V Testing</span>
+        <span class="skill-tag">CEMILAC</span>
+        <span class="skill-tag">FAA Awareness</span>
+        <span class="skill-tag">EASA Awareness</span>
+        <span class="skill-tag">Test Documentation</span>
+      </div>
+    </div>
+    <div class="skill-card">
+      <div class="skill-card-icon">🕹️</div>
+      <div class="skill-card-title">Flight Control Systems</div>
+      <div class="skill-tags">
+        <span class="skill-tag">ArduPilot</span>
+        <span class="skill-tag">PX4</span>
+        <span class="skill-tag">Pixhawk Cube Orange+</span>
+        <span class="skill-tag">JIYI K++</span>
+        <span class="skill-tag">VK V9</span>
+        <span class="skill-tag">Firmware Tuning</span>
+        <span class="skill-tag">Log Analysis</span>
+      </div>
+    </div>
+    <div class="skill-card">
+      <div class="skill-card-icon">🔬</div>
+      <div class="skill-card-title">Research &amp; Development</div>
+      <div class="skill-tags">
+        <span class="skill-tag">UAV Conceptualisation</span>
+        <span class="skill-tag">Endurance Estimation</span>
+        <span class="skill-tag">Prototyping</span>
+        <span class="skill-tag">Patent Ideation</span>
+        <span class="skill-tag">Root Cause Analysis</span>
+        <span class="skill-tag">Proof-of-Concept</span>
+      </div>
+    </div>
+    <div class="skill-card">
+      <div class="skill-card-icon">💻</div>
+      <div class="skill-card-title">Software &amp; Tools</div>
+      <div class="skill-tags">
+        <span class="skill-tag">Mission Planner</span>
+        <span class="skill-tag">QGroundControl</span>
+        <span class="skill-tag">UAV Log Analyzer</span>
+        <span class="skill-tag">Google Workspace</span>
+        <span class="skill-tag">MS Office Suite</span>
+        <span class="skill-tag">Custom GCS Dev</span>
+      </div>
+    </div>
+    <div class="skill-card">
+      <div class="skill-card-icon">👥</div>
+      <div class="skill-card-title">Leadership &amp; Management</div>
+      <div class="skill-tags">
+        <span class="skill-tag">Project Management</span>
+        <span class="skill-tag">Cross-functional Teams</span>
+        <span class="skill-tag">Team Mentoring</span>
+        <span class="skill-tag">Milestone Tracking</span>
+        <span class="skill-tag">Stakeholder Comms</span>
+        <span class="skill-tag">Certification Reporting</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EXPERIENCE -->
+<section id="experience">
+  <div class="section-header">
+    <div class="section-eyebrow">Flight Log</div>
+    <h2 class="section-title">Professional <span>Experience</span></h2>
+  </div>
+  <div class="timeline">
+    <div class="timeline-item">
+      <div class="timeline-dot"></div>
+      <div class="timeline-period">Oct 2024 – Feb 2026</div>
+      <div class="timeline-company">Marut Dronetech Pvt Ltd</div>
+      <div class="timeline-role">Senior Engineer</div>
+      <div class="timeline-location">📍 Hyderabad, India</div>
+      <ul class="timeline-points">
+        <li>Spearheading UAS Type Certification projects, ensuring full DGCA compliance and alignment with international aviation standards.</li>
+        <li>Driving UAS development with deep focus on avionics integration, subsystem optimisation, and system interoperability.</li>
+        <li>Conceptualising and contributing to novel patent ideas targeting innovative UAV subsystems and integration methodologies.</li>
+        <li>Executing system-level integration of avionics, propulsion, sensors, and GCS — improving reliability, performance, and mission adaptability.</li>
+        <li>Leading documentation, validation, and compliance testing; delivering high-quality certification-ready technical reports.</li>
+        <li>Supporting flight trials and performance evaluations, analysing telemetry data, and implementing RCA-driven corrective improvements.</li>
+        <li>Driving modular, scalable UAS platform design for both commercial and defence applications.</li>
+      </ul>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-dot"></div>
+      <div class="timeline-period">May 2023 – Sept 2024</div>
+      <div class="timeline-company">Chatak Innovations LLP</div>
+      <div class="timeline-role">Assistant Manager</div>
+      <div class="timeline-location">📍 Sangli, Maharashtra</div>
+      <ul class="timeline-points">
+        <li>Supervised integration and maintenance of operational UAVs, ensuring seamless functionality and high reliability.</li>
+        <li>Led the Firmware and Software Department, delivering custom embedded firmware for flight controllers.</li>
+        <li>Directed R&D initiatives for mapping and training drone applications.</li>
+        <li>Team Lead for Type Certification Projects — guiding the team through DGCA regulatory requirements and stringent industry standards.</li>
+        <li>Maintained continuous communication with certification bodies and stakeholders to ensure timely, successful project completions.</li>
+        <li>Enhanced GCS capabilities through strategic technological advancements, enabling more efficient UAV operations.</li>
+        <li>Awarded for delivering successful project completions with minimal timelines.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects">
+  <div class="section-header">
+    <div class="section-eyebrow">Mission Highlights</div>
+    <h2 class="section-title">Project <span>Achievements</span></h2>
+  </div>
+  <div class="projects-grid">
+    <div class="project-card">
+      <div class="project-num">01</div>
+      <div class="project-title">10+ DGCA TYPE CERTIFICATIONS</div>
+      <div class="project-desc">Led and successfully completed over 10 DGCA Type Certification projects with minimal timelines, covering full validation, verification, compliance testing, and documentation. Recognised with an award for fastest project completion.</div>
+      <span class="project-tag">Type Certification</span>
+    </div>
+    <div class="project-card">
+      <div class="project-num">02</div>
+      <div class="project-title">MODULAR UAS FUMIGATION PROTOTYPE</div>
+      <div class="project-desc">Developed a modular prototype enabling fumigation via UAS — addressing precision agriculture needs with a scalable, interchangeable payload architecture that simplifies field operations and maintenance.</div>
+      <span class="project-tag">R&D / Prototyping</span>
+    </div>
+    <div class="project-card">
+      <div class="project-num">03</div>
+      <div class="project-title">CUSTOM GCS DEVELOPMENT &amp; ENHANCEMENT</div>
+      <div class="project-desc">Elevated ground control station capabilities through strategic enhancements at Chatak Innovations, enabling more efficient UAV operations and real-time situational awareness for field missions.</div>
+      <span class="project-tag">GCS / Software</span>
+    </div>
+    <div class="project-card">
+      <div class="project-num">04</div>
+      <div class="project-title">PATENT IDEATION – UAV SUBSYSTEMS</div>
+      <div class="project-desc">Conceptualised and contributed to novel patent ideas at Marut Dronetech targeting innovative UAV integration methodologies and subsystem designs to enhance operational efficiency and future-proof UAS platforms.</div>
+      <span class="project-tag">Innovation / IP</span>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="section-header">
+    <div class="section-eyebrow">Establish Comms</div>
+    <h2 class="section-title">Get In <span>Touch</span></h2>
+  </div>
+  <div class="contact-inner">
+    <div>
+      <div class="contact-info-title">CONTACT CHANNELS</div>
+      <div class="contact-links">
+        <a href="tel:+918208859083" class="contact-link">
+          <div class="contact-link-icon">📞</div>
+          <div>
+            <span class="contact-link-label">Phone</span>
+            <span class="contact-link-value">+91 82088 59083</span>
+          </div>
+        </a>
+        <a href="mailto:tdpusadkar@gmail.com" class="contact-link">
+          <div class="contact-link-icon">✉️</div>
+          <div>
+            <span class="contact-link-label">Email</span>
+            <span class="contact-link-value">tdpusadkar@gmail.com</span>
+          </div>
+        </a>
+        <a href="https://www.linkedin.com/in/tusharp11/" target="_blank" class="contact-link">
+          <div class="contact-link-icon">🔗</div>
+          <div>
+            <span class="contact-link-label">LinkedIn</span>
+            <span class="contact-link-value">linkedin.com/in/tusharp11</span>
+          </div>
+        </a>
+        <div class="contact-link" style="cursor:default;">
+          <div class="contact-link-icon">📍</div>
+          <div>
+            <span class="contact-link-label">Location</span>
+            <span class="contact-link-value">Amravati, Maharashtra, India</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="contact-right">
+      <div class="availability-badge">
+        <div class="pulse-dot"></div>
+        Open to New Opportunities
+      </div>
+      <p>Whether you're looking for an experienced UAS engineer to lead your next <strong>type certification programme</strong>, drive <strong>UAV system development</strong>, or join a forward-thinking aerospace team — I'm ready for the next mission.</p>
+      <p>I bring hands-on expertise across the full UAV development lifecycle, from concept through to certified, deployable systems. I thrive in cross-functional environments and am passionate about pushing the boundaries of drone technology.</p>
+      <p>Feel free to reach out via email or LinkedIn. I typically respond within 24 hours.</p>
+      <a href="mailto:tdpusadkar@gmail.com" class="btn-primary" style="margin-top:1rem; display:inline-block;">Send a Message</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <span style="color:var(--accent);">TUSHAR PUSADKAR</span> &nbsp;·&nbsp; AERONAUTICAL ENGINEER &nbsp;·&nbsp; UAS SPECIALIST &nbsp;·&nbsp; © 2025
+</footer>
+
+<script>
+// ── Radar canvas background ──
+const canvas = document.getElementById('radar-canvas');
+const ctx = canvas.getContext('2d');
+let W, H, particles = [];
+
+function resize() {
+  W = canvas.width  = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+}
+
+function initParticles() {
+  particles = [];
+  const count = Math.floor((W * H) / 22000);
+  for (let i = 0; i < count; i++) {
+    particles.push({
+      x: Math.random() * W,
+      y: Math.random() * H,
+      vx: (Math.random() - 0.5) * 0.3,
+      vy: (Math.random() - 0.5) * 0.3,
+      size: Math.random() * 1.5 + 0.3,
+      alpha: Math.random() * 0.6 + 0.1
+    });
+  }
+}
+
+function drawConnections() {
+  for (let i = 0; i < particles.length; i++) {
+    for (let j = i + 1; j < particles.length; j++) {
+      const dx = particles[i].x - particles[j].x;
+      const dy = particles[i].y - particles[j].y;
+      const dist = Math.sqrt(dx*dx + dy*dy);
+      if (dist < 120) {
+        ctx.beginPath();
+        ctx.moveTo(particles[i].x, particles[i].y);
+        ctx.lineTo(particles[j].x, particles[j].y);
+        ctx.strokeStyle = `rgba(0,212,255,${0.12 * (1 - dist/120)})`;
+        ctx.lineWidth = 0.5;
+        ctx.stroke();
+      }
+    }
+  }
+}
+
+function animate() {
+  ctx.clearRect(0, 0, W, H);
+  particles.forEach(p => {
+    p.x += p.vx; p.y += p.vy;
+    if (p.x < 0) p.x = W;
+    if (p.x > W) p.x = 0;
+    if (p.y < 0) p.y = H;
+    if (p.y > H) p.y = 0;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(0,212,255,${p.alpha})`;
+    ctx.fill();
+  });
+  drawConnections();
+  requestAnimationFrame(animate);
+}
+
+window.addEventListener('resize', () => { resize(); initParticles(); });
+resize();
+initParticles();
+animate();
+</script>
+</body>
+</html>
